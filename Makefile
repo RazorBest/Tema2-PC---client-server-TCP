@@ -2,48 +2,45 @@
 # Laborator 8: Multiplexare
 # Makefile
 
-CC = gcc
-CFLAGS = -Wall -g
+CC = g++
+CFLAGS = -w -Wall
 
 # Portul pe care asculta serverul (de completat)
-PORT = 2048 
-
-IP_SERVER = 127.0.0.1
 
 SERVER_SOURCE_FILES = \
-	Hashtable.c \
+	tcp_app.cpp \
+	subscriber.cpp \
+	utils.cpp \
+	BufferedTcpSocket.cpp \
+	MultiSocket.cpp \
 
-CLIENT_SOURCE_FILES = Hashtable.c
+CLIENT_SOURCE_FILES = \
+	tcp_app.cpp \
+	subscriber.cpp \
+	utils.cpp \
+	BufferedTcpSocket.cpp \
+	MultiSocket.cpp \
  
-SINGLE_HEADERS = \
-	utils.h \
+# SINGLE_HEADERS =
 
-all: server
+all: server subscriber
 
 SERVER_OBJ_FILES = $(SERVER_SOURCE_FILES:.c=.o)
 CLIENT_OBJ_FILES = $(CLIENT_SOURCE_FILES:.c=.o)
 
 # Compileaza server.c
-server: $(SERVER_OBJ_FILES) server.c
+server: $(SERVER_OBJ_FILES) server.cpp
 	$(CC) $(CFLAGS) $^ -o $@
 
 # Compileaza client.c
-client: $(CLIENT_OBJ_FILES)
-	$(CC) $(CFLAGS) $< -o $@
+subscriber: $(CLIENT_OBJ_FILES) client.cpp
+	$(CC) $(CFLAGS) $^ -o $@
 
 
 .PHONY: clean run_server run_client
 
-%.o : %.c %.h
+%.o : %.cpp %.h
 	$(CC) $(CFLAGS) -c $< -o $@
 
-# Ruleaza serverul
-run_server:
-	./server ${PORT}
-
-# Ruleaza clientul
-run_client:
-	./client ${IP_SERVER} ${PORT}
-
 clean:
-	rm -f server client *.o
+	rm -f server subscriber *.o
